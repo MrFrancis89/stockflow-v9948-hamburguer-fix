@@ -616,27 +616,27 @@ function _initItemListeners() {
             const subId = btn.dataset.sidebarId;
             try { localStorage.setItem(LS_KEY, subId); } catch(e) {}
 
-            // 1. Ativa a aba fichatecnica via nav-tab oculto (navegacao.js gerencia tudo)
+            // 1. Grava a aba desejada em localStorage ANTES de abrir o iframe.
+            //    ft-app.js lê esta chave no boot — solução sem race condition.
+            if (ftTab) {
+                try { localStorage.setItem('sidebarFtPendingTab', ftTab); } catch(e) {}
+            }
+
+            // 2. Ativa a aba fichatecnica via nav-tab oculto (navegacao.js gerencia tudo)
             const ftNavTab = document.querySelector('.nav-tab[data-tab="fichatecnica"]');
             if (ftNavTab) ftNavTab.click();
 
-            // 2. Envia postMessage ao iframe para trocar a aba interna
+            // 3. Se o iframe já estava carregado, envia postMessage também
+            //    (para quando o usuário volta à FT já aberta sem recarregar)
             if (ftTab) {
                 const iframe = document.getElementById('ft-iframe');
-
-                const sendNav = () => {
-                    iframe?.contentWindow?.postMessage(
-                        { type: 'SF_FT_NAV', tab: ftTab },
-                        window.location.origin
-                    );
-                };
-
-                // Se o iframe já foi carregado (src definido) → aguarda animação
                 if (iframe && iframe.getAttribute('src')) {
-                    setTimeout(sendNav, 400);
-                } else if (iframe) {
-                    // Ainda não carregou → aguarda evento load
-                    iframe.addEventListener('load', () => setTimeout(sendNav, 200), { once: true });
+                    setTimeout(() => {
+                        iframe.contentWindow?.postMessage(
+                            { type: 'SF_FT_NAV', tab: ftTab },
+                            window.location.origin
+                        );
+                    }, 120);
                 }
             }
 
