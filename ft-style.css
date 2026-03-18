@@ -123,8 +123,9 @@ html,body {
 }
 input,select,button,textarea {
   font-family:inherit; font-size:16px; color:inherit;
+  -webkit-appearance:none; appearance:none;
 }
-button { cursor:pointer; -webkit-tap-highlight-color:transparent; }
+button { cursor:pointer; -webkit-tap-highlight-color:transparent; background:transparent; }
 code { font-family:ui-monospace,monospace; font-size:12px; background:var(--ft-s3); border-radius:4px; padding:1px 5px; }
 
 /* ══════════════════════════════════════════════════════════════════
