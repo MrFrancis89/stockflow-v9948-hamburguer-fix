@@ -676,6 +676,9 @@ button {
   letter-spacing: -0.1px;
   padding: 14px 18px;
   cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
   transition: transform 0.15s var(--spring), background 0.2s,
               box-shadow 0.2s, opacity 0.15s;
   box-shadow: var(--shadow-btn);
