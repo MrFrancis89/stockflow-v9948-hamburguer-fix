@@ -155,8 +155,9 @@ async function _initApp() {
 
     setLoading(false);
     document.dispatchEvent(new CustomEvent('ft:appReady'));
-    // Aplica tab pendente (enviado via postMessage antes do app estar pronto)
-    if (_pendingTab) { _navTo(_pendingTab); _pendingTab = null; }
+    // Aplica tab pendente — prioridade: localStorage (sidebar) > postMessage
+    const _lsTab = (() => { try { const t = localStorage.getItem('sidebarFtPendingTab'); localStorage.removeItem('sidebarFtPendingTab'); return t; } catch(e) { return null; } })();
+    if (_lsTab) { _navTo(_lsTab); } else if (_pendingTab) { _navTo(_pendingTab); _pendingTab = null; }
 }
 
 // Avatar + nome do usuário no header
@@ -198,7 +199,8 @@ async function init() {
             console.error('[ft-app] init offline error:', e);
             toast('Erro ao carregar dados offline.', 'aviso');
         }
-        if (_pendingTab) { _navTo(_pendingTab); _pendingTab = null; } else { _navTo('ing'); }
+        const _lsTabOff = (() => { try { const t = localStorage.getItem('sidebarFtPendingTab'); localStorage.removeItem('sidebarFtPendingTab'); return t; } catch(e) { return null; } })();
+        if (_lsTabOff) { _navTo(_lsTabOff); } else if (_pendingTab) { _navTo(_pendingTab); _pendingTab = null; } else { _navTo('ing'); }
         document.dispatchEvent(new CustomEvent('ft:appReady'));
         return;
     }
@@ -326,7 +328,8 @@ function _listeners() {
         } catch (e) {
             console.warn('[ft-app] forceOffline init error:', e);
         }
-        if (_pendingTab) { _navTo(_pendingTab); _pendingTab = null; } else { _navTo('ing'); }
+        const _lsTabForce = (() => { try { const t = localStorage.getItem('sidebarFtPendingTab'); localStorage.removeItem('sidebarFtPendingTab'); return t; } catch(e) { return null; } })();
+        if (_lsTabForce) { _navTo(_lsTabForce); } else if (_pendingTab) { _navTo(_pendingTab); _pendingTab = null; } else { _navTo('ing'); }
         document.dispatchEvent(new CustomEvent('ft:appReady'));
     }, { once: true });
 }
